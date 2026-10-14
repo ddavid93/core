@@ -2597,8 +2597,11 @@ function renderVDOMSlot(
     let slotContentValid = false
 
     if (slotsRef.value) {
-      const renderContent = () =>
-        renderSlot(slotsRef.value, isFunction(name) ? name() : name, props)
+      const renderContent = () => {
+        const slotName = isFunction(name) ? name() : name
+        frag.slotName = slotName
+        return renderSlot(slotsRef.value, slotName, props)
+      }
       slotContent = once ? withOnce(renderContent) : renderContent()
 
       if (isVNode(slotContent)) {
@@ -3373,6 +3376,7 @@ function renderVaporSlot(
         }
       },
     })
+    slotResolutionState.holdsContent = true
     // under a vdom Transition (the hooks are on the vnode before the slot
     // renders), a fallback committed later transitions with the hooks the
     // Transition applied to the fragment
